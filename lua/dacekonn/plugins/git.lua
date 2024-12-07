@@ -11,6 +11,11 @@ return {
   config = function()
     local neogit = require 'neogit'
 
+    vim.api.nvim_set_keymap('n', '<leader>gg', ':Neogit<CR>', { noremap = true, silent = true, desc = 'neo[g]it' })
+    vim.api.nvim_set_keymap('n', '<leader>gc', ':NeogitCommit<CR>', { noremap = true, silent = true, desc = '[c]ommit' })
+    vim.api.nvim_set_keymap('n', '<leader>gl', ':NeogitLogCurrent<CR>', { noremap = true, silent = true, desc = 'show [c]urrent log' })
+    vim.api.nvim_set_keymap('n', '<leader>gr', ':NeogitReset<CR>', { noremap = true, silent = true, desc = '[r]eset' })
+
     neogit.setup {
       -- Hides the hints at the top of the status buffer
       disable_hint = false,
