@@ -705,6 +705,15 @@ require('lazy').setup({
             require('lspconfig')[server_name].setup(server)
           end,
         },
+        jdtls = function()
+          require('java').setup {
+            -- Your custom jdtls settings goes here
+          }
+
+          require('lspconfig').jdtls.setup {
+            -- Your custom nvim-java configuration goes here
+          }
+        end,
       }
     end,
   },
