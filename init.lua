@@ -445,7 +445,6 @@ require('lazy').setup({
     end,
   },
 
-  { 'mfussenegger/nvim-jdtls' },
   -- LSP Plugins
   {
     -- `lazydev` configures Lua LSP for your Neovim config, runtime and plugins
@@ -683,14 +682,13 @@ require('lazy').setup({
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
         'gopls',
-        'jdtls',
         'yaml-language-server',
         'lua-language-server',
         'rust-analyzer',
         'marksman',
         'xmlformatter',
         'lemminx',
-        'google-java-format',
+        -- 'google-java-format',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
