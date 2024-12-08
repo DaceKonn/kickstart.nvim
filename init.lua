@@ -689,7 +689,6 @@ require('lazy').setup({
         'marksman',
         'xmlformatter',
         'lemminx',
-        -- 'google-java-format',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -703,16 +702,16 @@ require('lazy').setup({
             server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
             require('lspconfig')[server_name].setup(server)
           end,
-        },
-        jdtls = function()
-          require('java').setup {
-            -- Your custom jdtls settings goes here
-          }
+          jdtls = function()
+            require('java').setup {
+              -- Your custom jdtls settings goes here
+            }
 
-          require('lspconfig').jdtls.setup {
-            -- Your custom nvim-java configuration goes here
-          }
-        end,
+            require('lspconfig').jdtls.setup {
+              -- Your custom nvim-java configuration goes here
+            }
+          end,
+        },
       }
     end,
   },
