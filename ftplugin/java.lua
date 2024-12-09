@@ -38,6 +38,24 @@ local config = {
   settings = {
     java = {
       home = 'c:/Program Files/Java/jdk-17',
+      eclipse = {
+        downloadSources = true,
+      },
+      configuration = {
+        updateBuildConfiguration = 'interactive',
+        -- TODO Update this by adding any runtimes that you need to support your Java projects and removing any that you don't have installed
+        -- The runtime name parameters need to match specific Java execution environments.  See https://github.com/tamago324/nlsp-settings.nvim/blob/2a52e793d4f293c0e1d61ee5794e3ff62bfbbb5d/schemas/_generated/jdtls.json#L317-L334
+        runtimes = {
+          {
+            name = 'JavaSE-17',
+            path = 'c:/Program Files/Java/jdk-17',
+          },
+          {
+            name = 'JavaSE-21',
+            path = 'c:/Program Files/Java/jdk-21',
+          },
+        },
+      },
       signatureHelp = { enabled = true },
       extendedClientCapabilities = extendedClientCapabilities,
       maven = {
@@ -64,6 +82,12 @@ local config = {
     bundles = {},
   },
 }
+
+config['on_attach'] = function(client, bufnr)
+  jdtls.setup_dap { hotcodereplace = 'auto' }
+  require('jdtls.dap').setup_dap_main_class_configs()
+end
+
 require('jdtls').start_or_attach(config)
 
 vim.keymap.set('n', '<leader>co', "<Cmd>lua require'jdtls'.organize_imports()<CR>", { desc = 'Organize Imports' })
