@@ -1,4 +1,5 @@
-local home = os.getenv 'USERPROFILE'
+-- the home var is common issue, on widnows should be set to USERPROFILE
+local home = os.getenv 'USERPROFILE' or os.getenv 'HOME'
 local share = '/AppData/Local/nvim-data'
 local workspace_path = home .. share .. '/jdtls-workspace/'
 local project_name = vim.fn.fnamemodify(vim.fn.getcwd(), ':p:h:t')
