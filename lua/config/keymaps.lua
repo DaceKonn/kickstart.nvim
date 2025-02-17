@@ -37,9 +37,9 @@ vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower win
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
 -- [Easy windows split]
-vim.keybap.set('n', '<leader>wv', ':vsplit<cr>', { desc = '[W]indow Split [V]ertical' })
-vim.keybap.set('n', '<leader>wh', ':vsplit<cr>', { desc = '[W]indow Split [H]orizontal' })
+vim.keymap.set('n', '<leader>wv', ':vsplit<cr>', { desc = '[W]indow Split [V]ertical' })
+vim.keymap.set('n', '<leader>wh', ':vsplit<cr>', { desc = '[W]indow Split [H]orizontal' })
 
 -- [Stay in indent mode]
-vim.keypam.set('v', '<', '<gv', { desc = 'Indent left in visual mode' })
-vim.keypam.set('v', '>', '>gv', { desc = 'Indent right in visual mode' })
+vim.keymap.set('v', '<', '<gv', { desc = 'Indent left in visual mode' })
+vim.keymap.set('v', '>', '>gv', { desc = 'Indent right in visual mode' })
