@@ -13,6 +13,14 @@ return {
 
     -- Allows extra capabilities provided by nvim-cmp
     'hrsh7th/cmp-nvim-lsp',
+    -- automatically ensure debug adapters are installed
+    'jay-baby/mason-nvim-dap.nvim',
+    {
+      'mfussenegger/nvim-jdtls',
+      dependencies = {
+        'mfussenegger/nvim-dap',
+      },
+    },
   },
   config = function()
     -- Brief aside: **What is LSP?**
@@ -227,10 +235,22 @@ return {
       'marksman',
       'xmlformatter',
       'lemminx',
+      'jdtls',
+      'java-debug-adapter',
+      'java-test',
+      'google-java-format',
     })
-    require('mason-tool-installer').setup { ensure_installed = ensure_installed }
+    require('mason-tool-installer').setup {
+      ensure_installed = ensure_installed,
+      integrations = {
+        ['mason-lspconfig'] = true,
+        -- ['mason-null-ls'] = true,
+        ['mason-nvim-dap'] = true,
+      },
+    }
 
     require('mason-lspconfig').setup {
+      automatic_installation = true,
       handlers = {
         function(server_name)
           local server = servers[server_name] or {}
@@ -241,6 +261,10 @@ return {
           require('lspconfig')[server_name].setup(server)
         end,
       },
+    }
+
+    require('mason-nvim-dap').setup {
+      automatic_installation = true,
     }
   end,
 }
