@@ -14,7 +14,7 @@ return {
     -- Allows extra capabilities provided by nvim-cmp
     'hrsh7th/cmp-nvim-lsp',
     -- automatically ensure debug adapters are installed
-    'jay-baby/mason-nvim-dap.nvim',
+    'jay-babu/mason-nvim-dap.nvim',
     {
       'mfussenegger/nvim-jdtls',
       dependencies = {
