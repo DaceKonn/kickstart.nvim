@@ -26,7 +26,7 @@ vim.opt.sidescrolloff = 8
 
 -- [Tab spacing/behavior]
 vim.opt.expandtab = true
-vim.opt.shiftwith = 4
+vim.opt.shiftwidth = 4
 vim.opt.tabstop = 4
 vim.opt.softtabstop = 4
 vim.opt.smartindent = true
