@@ -31,7 +31,35 @@ return { -- Collection of various small independent plugins/modules
       return '%2l:%-2v'
     end
 
+    -- [Move - move blocks of selected code]
+    require('mini.move').setup({
+      -- Move visual selection in Visual mode. Defaults are Alt (Meta) + hjkl.
+      left = '<M-h>',
+      right = '<M-l>',
+      down = '<M-j>',
+      up = '<M-k>',
+
+      -- Move current line in Normal mode
+      line_left = '<M-h>',
+      line_right = '<M-l>',
+      line_down = '<M-j>',
+      line_up = '<M-k>',
+    }
+    )
+
+    -- [Notify]
+    require('mini.notify').setup()
+
+
+    -- [Starter]
+    require('mini.starter').setup()
+
+    -- [Session]
+    require('mini.sessions').setup()
+
+
     -- ... and there is more!
     --  Check out: https://github.com/echasnovski/mini.nvim
+
   end,
 }

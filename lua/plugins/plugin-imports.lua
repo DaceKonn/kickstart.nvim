@@ -1,1 +1,0 @@
-return { import = 'dacekonn.plugins' }
