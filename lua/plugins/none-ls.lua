@@ -14,7 +14,8 @@ return {
                 -- setup eslint linter for javascript
                 require("none-ls.diagnostics.eslint_d"),
                 -- setup prettier to format languages that are not lua
-                null_ls.builtins.formatting.prettier
+                null_ls.builtins.formatting.prettier,
+                null_ls.builtins.formatting.dart
             }
         })
 

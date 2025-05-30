@@ -12,7 +12,8 @@ return {
         config = function()
             -- ensure that we have lua language server, typescript launguage server, java language server, and java test language server are installed
             require("mason-lspconfig").setup({
-                ensure_installed = { "lua_ls", "ts_ls", "jdtls" },
+                -- tsserver should be used instead of ts_ls - suppousedly
+                ensure_installed = { "lua_ls", "tsserver", "jdtls", "gopls", "dcm" },
             })
         end
     },
@@ -38,7 +39,6 @@ return {
         config = function()
             -- get access to the lspconfig plugins functions
             local lspconfig = require("lspconfig")
-
             local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
             -- setup the lua language server
@@ -51,10 +51,32 @@ return {
                 capabilities = capabilities,
             })
 
+            -- setup gopls
+            lspconfig.gopls.setup({
+                capabilities = capabilities,
+                cmd = { 'gopls' },
+                filetypes = { 'go', 'gomod', 'gowork', 'gotmpl' },
+                settings = {
+                  gopls = {
+                    completeUnimported = true,
+                    usePlaceholders = true,
+                    analyses = {
+                      unusedparams = true,
+                    },
+                  },
+                },
+              })
+
+            -- setup dart language server
+            lspconfig.dcm.setup({
+                capabilities = capabilities,
+            })
+
             -- Set vim motion for <Space> + c + h to show code documentation about the code the cursor is currently over if available
             vim.keymap.set("n", "<leader>ch", vim.lsp.buf.hover, { desc = "[C]ode [H]over Documentation" })
             -- Set vim motion for <Space> + c + d to go where the code/variable under the cursor was defined
             vim.keymap.set("n", "<leader>cd", vim.lsp.buf.definition, { desc = "[C]ode Goto [D]efinition" })
+            vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "[G]oto [D]efinition" })
             -- Set vim motion for <Space> + c + a for display code action suggestions for code diagnostics in both normal and visual mode
             vim.keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, { desc = "[C]ode [A]ctions" })
             -- Set vim motion for <Space> + c + r to display references to the code under the cursor
