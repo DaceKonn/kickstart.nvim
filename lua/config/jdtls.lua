@@ -64,6 +64,8 @@ local function java_keymaps()
     vim.cmd("command! -buffer JdtBytecode lua require('jdtls').javap()")
     -- Allow yourself/register to run JdtShell as a Vim command
     vim.cmd("command! -buffer JdtJshell lua require('jdtls').jshell()")
+    -- Add jdtls-specific class creation commands
+    vim.cmd("command! -buffer JdtCreateClass lua require('jdtls.ui').pick_one_async({}, {prompt = 'Class type:'}, function(item) vim.cmd('edit ' .. vim.fn.input('Class name: ') .. '.java') end)")
 
     -- Set a Vim motion to <Space> + <Shift>J + o to organize imports in normal mode
     vim.keymap.set('n', '<leader>Jo', "<Cmd> lua require('jdtls').organize_imports()<CR>", { desc = "[J]ava [O]rganize Imports" })
@@ -108,7 +110,7 @@ local function setup_jdtls()
         },
         textDocument = {
             completion = {
-                snippetSupport = false
+                snippetSupport = true  -- Enable snippet support for better class creation
             }
         }
     }
@@ -149,10 +151,23 @@ local function setup_jdtls()
             -- Enable code formatting
             format = {
                 enabled = true,
-                -- Use the Google Style guide for code formattingh
+                -- Use the Google Style guide for code formatting
                 settings = {
                     url = vim.fn.stdpath("config") .. "/lang_servers/intellij-java-google-style.xml",
                     profile = "GoogleStyle"
+                }
+            },
+            -- Enable templates for code generation
+            templates = {
+                fileHeader = {
+                    "/**",
+                    " * ${type_name}",
+                    " */"
+                },
+                typeComment = {
+                    "/**",
+                    " * ${type_name}",
+                    " */"
                 }
             },
             -- Enable downloading archives from eclipse automatically
@@ -222,7 +237,13 @@ local function setup_jdtls()
                     useJava7Objects = true
                 },
                 -- When generating code use code blocks
-                useBlocks = true
+                useBlocks = true,
+                -- Enable insertionPoint for better class generation
+                insertionPoint = "lastMember"
+            },
+            -- Enable templates and snippets
+            templates = {
+                enabled = true
             },
              -- If changes to the project will require the developer to update the projects configuration advise the developer before accepting the change
             configuration = {
