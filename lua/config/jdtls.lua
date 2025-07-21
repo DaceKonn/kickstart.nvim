@@ -248,12 +248,15 @@ local function setup_jdtls()
     }
 
     -- Function that will be ran once the language server is attached
-    local on_attach = function(_, bufnr)
+    local on_attach = function(client, bufnr)
         -- Map the Java specific key mappings once the server is attached
         java_keymaps()
 
         -- Setup the java debug adapter of the JDTLS server
         require('jdtls.dap').setup_dap()
+
+        require("nvim-navic").attach(client, bufnr)
+
 
         -- Find the main method(s) of the application so the debug adapter can successfully start up the application
         -- Sometimes this will randomly fail if language server takes to long to startup for the project, if a ClassDefNotFoundException occurs when running
@@ -265,6 +268,8 @@ local function setup_jdtls()
         -- Refresh the codelens
         -- Code lens enables features such as code reference counts, implemenation counts, and more.
         vim.lsp.codelens.refresh()
+
+        -- vim.opt.winbar = "%!v:lua.require('nvim-navic').get_location()"
 
         -- Setup a function that automatically runs every time a java file is saved to refresh the code lens
         vim.api.nvim_create_autocmd("BufWritePost", {

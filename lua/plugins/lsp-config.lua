@@ -32,28 +32,45 @@ return {
         "mfussenegger/nvim-jdtls",
         dependencies = {
             "mfussenegger/nvim-dap",
+            "SmiteshP/nvim-navic",
+            "nvim-tree/nvim-web-devicons",
         }
     },
     {
         "neovim/nvim-lspconfig",
+        dependencies = {
+            "SmiteshP/nvim-navic",
+            "nvim-tree/nvim-web-devicons",
+        },
         config = function()
             -- get access to the lspconfig plugins functions
             local lspconfig = require("lspconfig")
             local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
+            -- setup code context integration
+            local navic = require("nvim-navic")
+            local on_attach = function(client, bufnr)
+                if client.server_capabilities.documentSymbolProvider then
+                    navic.attach(client, bufnr)
+                end
+            end
+
             -- setup the lua language server
             lspconfig.lua_ls.setup({
                 capabilities = capabilities,
+                on_attach = on_attach,
             })
 
             -- setup the typescript language server
             lspconfig.ts_ls.setup({
                 capabilities = capabilities,
+                on_attach = on_attach,
             })
 
             -- setup gopls
             lspconfig.gopls.setup({
                 capabilities = capabilities,
+                on_attach = on_attach,
                 cmd = { 'gopls' },
                 filetypes = { 'go', 'gomod', 'gowork', 'gotmpl' },
                 settings = {
@@ -70,7 +87,18 @@ return {
             -- setup dart language server
             lspconfig.dcm.setup({
                 capabilities = capabilities,
+                on_attach = on_attach,
             })
+
+            lspconfig.nushell.setup({
+                cmd = { "nu", "--lsp" },
+                filetypes = { "nu" },
+                root_dir = lspconfig.util.find_git_ancstort,
+                single_file_support = true,
+                capabilities = capabilities
+            })
+
+            vim.opt.winbar = "%!v:lua.require('nvim-navic').get_location()"
 
             -- Set vim motion for <Space> + c + h to show code documentation about the code the cursor is currently over if available
             vim.keymap.set("n", "<leader>ch", vim.lsp.buf.hover, { desc = "[C]ode [H]over Documentation" })
@@ -87,6 +115,8 @@ return {
             vim.keymap.set("n", "<leader>cR", vim.lsp.buf.rename, { desc = "[C]ode [R]ename" })
             -- Set a vim motion for <Space> + c + <Shift>D to go to where the code/object was declared in the project (class file)
             vim.keymap.set("n", "<leader>cD", vim.lsp.buf.declaration, { desc = "[C]ode Goto [D]eclaration" })
+            -- Search document symbold
+            vim.keymap.set("n", "<leader>cs", require("telescope.builtin").lsp_document_symbols, {desc = "[C]ode Document [S]ymbols"})
         end
     }
 }
