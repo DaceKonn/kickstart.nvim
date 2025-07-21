@@ -12,8 +12,9 @@ return {
         config = function()
             -- ensure that we have lua language server, typescript launguage server, java language server, and java test language server are installed
             require("mason-lspconfig").setup({
-                -- tsserver should be used instead of ts_ls - suppousedly
-                ensure_installed = { "lua_ls", "tsserver", "jdtls", "gopls", "dcm" },
+                -- ts_ls is the new name for TypeScript LSP (tsserver was deprecated)
+                -- Note: Dart LSP is handled by Flutter/Dart SDK directly, not through Mason
+                ensure_installed = { "lua_ls", "ts_ls", "jdtls", "gopls" },
             })
         end
     },
@@ -85,15 +86,30 @@ return {
               })
 
             -- setup dart language server
-            lspconfig.dcm.setup({
+            lspconfig.dartls.setup({
                 capabilities = capabilities,
                 on_attach = on_attach,
+                cmd = { "dart", "language-server", "--protocol=lsp" },
+                filetypes = { "dart" },
+                init_options = {
+                    closingLabels = true,
+                    flutterOutline = true,
+                    onlyAnalyzeProjectsWithOpenFiles = true,
+                    outline = true,
+                    suggestFromUnimportedLibraries = true,
+                },
+                settings = {
+                    dart = {
+                        completeFunctionCalls = true,
+                        showTodos = true,
+                    },
+                },
             })
 
             lspconfig.nushell.setup({
                 cmd = { "nu", "--lsp" },
                 filetypes = { "nu" },
-                root_dir = lspconfig.util.find_git_ancstort,
+                root_dir = lspconfig.util.find_git_ancestor,
                 single_file_support = true,
                 capabilities = capabilities
             })
