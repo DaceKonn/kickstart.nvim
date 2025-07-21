@@ -62,8 +62,7 @@ local function java_keymaps()
     vim.cmd("command! -buffer JdtUpdateConfig lua require('jdtls').update_project_config()")
     -- Allow yourself/register to run JdtBytecode as a Vim command
     vim.cmd("command! -buffer JdtBytecode lua require('jdtls').javap()")
-    -- Allow yourself/register to run JdtShell as a Vim command
-    vim.cmd("command! -buffer JdtJshell lua require('jdtls').jshell()")
+    -- JdtJshell command will be registered after default commands in on_attach function
     -- Add jdtls-specific class creation commands
     vim.cmd("command! -buffer JdtCreateClass lua require('jdtls.ui').pick_one_async({}, {prompt = 'Class type:'}, function(item) vim.cmd('edit ' .. vim.fn.input('Class name: ') .. '.java') end)")
 
@@ -125,8 +124,10 @@ local function setup_jdtls()
     extendedClientCapabilities.resolveAdditionalTextEditsSupport = true
 
     -- Set the command that starts the JDTLS language server jar
+    -- Use full path to java executable to avoid Windows path issues
+    local java_cmd = vim.fn.exepath('java') or 'java'
     local cmd = {
-        'java',
+        java_cmd,
         '-Declipse.application=org.eclipse.jdt.ls.core.id1',
         '-Dosgi.bundles.defaultStartLevel=4',
         '-Declipse.product=org.eclipse.jdt.ls.core.product',
@@ -286,6 +287,14 @@ local function setup_jdtls()
         require('jdtls.dap').setup_dap_main_class_configs()
         -- Enable jdtls commands to be used in Neovim
         require 'jdtls.setup'.add_commands()
+        
+        -- Add a custom JShell command that works on Windows
+        vim.cmd("command! -buffer JdtJshellFixed lua require('config.jdtls').jshell_with_path_fix()")
+        
+        -- Force override the default JdtJshell command with our Windows-compatible version
+        vim.cmd("delcommand JdtJshell")
+        vim.cmd("command! -buffer JdtJshell lua require('config.jdtls').jshell_with_path_fix()")
+        
         -- Refresh the codelens
         -- Code lens enables features such as code reference counts, implemenation counts, and more.
         vim.lsp.codelens.refresh()
@@ -315,6 +324,47 @@ local function setup_jdtls()
     require('jdtls').start_or_attach(config)
 end
 
+-- Custom jshell function with Windows path fix
+local function jshell_with_path_fix()
+    -- Use direct jshell command with proper path resolution
+    local jshell_cmd = vim.fn.exepath('jshell')
+    
+    if not jshell_cmd or jshell_cmd == '' then
+        print("JShell not found in PATH. Make sure Java is properly installed.")
+        return
+    end
+    
+    -- Create a new terminal buffer for jshell
+    vim.cmd('new')
+    vim.cmd('resize 15')
+    
+    -- On Windows, termopen needs the path to be properly escaped/quoted
+    -- Use cmd /c to properly handle paths with spaces
+    local cmd_to_run
+    if vim.loop.os_uname().sysname == 'Windows_NT' then
+        -- Use cmd /c with quoted path for Windows
+        cmd_to_run = 'cmd /c ""' .. jshell_cmd .. '""'
+    else
+        -- On Linux, use the path directly
+        cmd_to_run = jshell_cmd
+    end
+    
+    -- Start jshell with proper command
+    vim.fn.termopen(cmd_to_run, {
+        on_exit = function(job_id, exit_code)
+            if exit_code == 0 then
+                print("JShell session ended normally")
+            else
+                print("JShell exited with code: " .. exit_code)
+            end
+        end
+    })
+    
+    -- Enter insert mode to start typing in jshell
+    vim.cmd('startinsert')
+end
+
 return {
     setup_jdtls = setup_jdtls,
+    jshell_with_path_fix = jshell_with_path_fix,
 }
