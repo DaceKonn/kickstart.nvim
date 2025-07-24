@@ -291,10 +291,6 @@ local function setup_jdtls()
         -- Add a custom JShell command that works on Windows
         vim.cmd("command! -buffer JdtJshellFixed lua require('config.jdtls').jshell_with_path_fix()")
         
-        -- Force override the default JdtJshell command with our Windows-compatible version
-        vim.cmd("delcommand JdtJshell")
-        vim.cmd("command! -buffer JdtJshell lua require('config.jdtls').jshell_with_path_fix()")
-        
         -- Refresh the codelens
         -- Code lens enables features such as code reference counts, implemenation counts, and more.
         vim.lsp.codelens.refresh()
