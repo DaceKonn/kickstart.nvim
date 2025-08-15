@@ -34,6 +34,19 @@ return {
             })
         end
         
+        -- Add Elixir formatter if available
+        if vim.fn.executable("mix") == 1 then
+            table.insert(sources, {
+                method = null_ls.methods.FORMATTING,
+                filetypes = { "elixir" },
+                generator = null_ls.formatter({
+                    command = "mix",
+                    args = { "format", "-" },
+                    to_stdin = true,
+                }),
+            })
+        end
+        
         -- run the setup function for none-ls to setup our different formatters
         null_ls.setup({
             sources = sources

@@ -14,7 +14,7 @@ return {
             require("mason-lspconfig").setup({
                 -- ts_ls is the new name for TypeScript LSP (tsserver was deprecated)
                 -- Note: Dart LSP is handled by Flutter/Dart SDK directly, not through Mason
-                ensure_installed = { "lua_ls", "ts_ls", "jdtls", "gopls" },
+                ensure_installed = { "lua_ls", "ts_ls", "jdtls", "gopls", "elixirls" },
             })
         end
     },
@@ -47,6 +47,9 @@ return {
             -- get access to the lspconfig plugins functions
             local lspconfig = require("lspconfig")
             local capabilities = require("cmp_nvim_lsp").default_capabilities()
+            
+
+
 
             -- setup code context integration
             local navic = require("nvim-navic")
@@ -113,6 +116,52 @@ return {
                 single_file_support = true,
                 capabilities = capabilities
             })
+
+            -- setup elixir language server (cross-platform)
+            local function get_elixir_ls_cmd()
+                -- Try Mason-installed ElixirLS first
+                local mason_path = vim.fn.stdpath('data') .. '/mason/packages/elixir-ls'
+                local language_server_script
+                
+                if vim.fn.has('win32') == 1 then
+                    language_server_script = mason_path .. '/language_server.bat'
+                else
+                    language_server_script = mason_path .. '/language_server.sh'
+                end
+                
+                if vim.fn.executable(language_server_script) == 1 then
+                    return { language_server_script }
+                end
+                
+                -- Fallback to system elixir-ls if available
+                if vim.fn.executable('elixir-ls') == 1 then
+                    return { 'elixir-ls' }
+                end
+                
+                -- Windows system fallback
+                if vim.fn.has('win32') == 1 and vim.fn.executable('language_server.bat') == 1 then
+                    return { 'language_server.bat' }
+                end
+                
+                return nil
+            end
+
+            local elixir_cmd = get_elixir_ls_cmd()
+            if elixir_cmd then
+                lspconfig.elixirls.setup({
+                    capabilities = capabilities,
+                    on_attach = on_attach,
+                    cmd = elixir_cmd,
+                    settings = {
+                        elixirLS = {
+                            dialyzerEnabled = false,
+                            fetchDeps = false,
+                            enableTestLenses = false,
+                            suggestSpecs = false,
+                        },
+                    },
+                })
+            end
 
             vim.opt.winbar = "%!v:lua.require('nvim-navic').get_location()"
 
