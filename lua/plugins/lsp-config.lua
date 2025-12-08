@@ -57,19 +57,28 @@ return {
             end
 
             -- setup the lua language server
-            lspconfig.lua_ls.setup({
+            -- lspconfig.lua_ls.setup({
+            --     capabilities = capabilities,
+            --     on_attach = on_attach,
+            -- })
+
+            vim.lsp.config("lua_ls", {
                 capabilities = capabilities,
                 on_attach = on_attach,
             })
 
             -- setup the typescript language server
-            lspconfig.ts_ls.setup({
+            -- lspconfig.ts_ls.setup({
+            --     capabilities = capabilities,
+            --     on_attach = on_attach,
+            -- })
+            vim.lsp.config("ts_ls", {
                 capabilities = capabilities,
                 on_attach = on_attach,
             })
 
             -- setup gopls
-            lspconfig.gopls.setup({
+            vim.lsp.config("gopls",{
                 capabilities = capabilities,
                 on_attach = on_attach,
                 cmd = { 'gopls' },
@@ -86,7 +95,7 @@ return {
               })
 
             -- setup dart language server
-            lspconfig.dartls.setup({
+            vim.lsp.config("dartls",{
                 capabilities = capabilities,
                 on_attach = on_attach,
                 cmd = { "dart", "language-server", "--protocol=lsp" },
@@ -106,7 +115,7 @@ return {
                 },
             })
 
-            lspconfig.nushell.setup({
+            vim.lsp.config("nushell",{
                 cmd = { "nu", "--lsp" },
                 filetypes = { "nu" },
                 root_dir = lspconfig.util.find_git_ancestor,
