@@ -14,7 +14,7 @@ return {
             require("mason-lspconfig").setup({
                 -- ts_ls is the new name for TypeScript LSP (tsserver was deprecated)
                 -- Note: Dart LSP is handled by Flutter/Dart SDK directly, not through Mason
-                ensure_installed = { "lua_ls", "ts_ls", "jdtls", "gopls", "elixirls" },
+                ensure_installed = { "lua_ls", "ts_ls", "jdtls", "gopls", "elixirls", "ols" },
             })
         end
     },
@@ -47,7 +47,7 @@ return {
             -- get access to the lspconfig plugins functions
             local lspconfig = require("lspconfig")
             local capabilities = require("cmp_nvim_lsp").default_capabilities()
-            
+
 
 
 
@@ -78,15 +78,15 @@ return {
                 cmd = { 'gopls' },
                 filetypes = { 'go', 'gomod', 'gowork', 'gotmpl' },
                 settings = {
-                  gopls = {
-                    completeUnimported = true,
-                    usePlaceholders = true,
-                    analyses = {
-                      unusedparams = true,
+                    gopls = {
+                        completeUnimported = true,
+                        usePlaceholders = true,
+                        analyses = {
+                            unusedparams = true,
+                        },
                     },
-                  },
                 },
-              })
+            })
 
             -- setup dart language server
             lspconfig.dartls.setup({
@@ -117,32 +117,43 @@ return {
                 capabilities = capabilities
             })
 
+            lspconfig.ols.setup({
+                capabilities = capabilities,
+                filetypes = { "odin" },
+                init_options = {
+                    checker_args = "-strict-style",
+                    collections = {
+                        { name = "shared", path = vim.fn.expand('$HOME/odin') }
+                    },
+                },
+            })
+
             -- setup elixir language server (cross-platform)
             local function get_elixir_ls_cmd()
                 -- Try Mason-installed ElixirLS first
                 local mason_path = vim.fn.stdpath('data') .. '/mason/packages/elixir-ls'
                 local language_server_script
-                
+
                 if vim.fn.has('win32') == 1 then
                     language_server_script = mason_path .. '/language_server.bat'
                 else
                     language_server_script = mason_path .. '/language_server.sh'
                 end
-                
+
                 if vim.fn.executable(language_server_script) == 1 then
                     return { language_server_script }
                 end
-                
+
                 -- Fallback to system elixir-ls if available
                 if vim.fn.executable('elixir-ls') == 1 then
                     return { 'elixir-ls' }
                 end
-                
+
                 -- Windows system fallback
                 if vim.fn.has('win32') == 1 and vim.fn.executable('language_server.bat') == 1 then
                     return { 'language_server.bat' }
                 end
-                
+
                 return nil
             end
 
@@ -173,15 +184,18 @@ return {
             -- Set vim motion for <Space> + c + a for display code action suggestions for code diagnostics in both normal and visual mode
             vim.keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, { desc = "[C]ode [A]ctions" })
             -- Set vim motion for <Space> + c + r to display references to the code under the cursor
-            vim.keymap.set("n", "<leader>cr", require("telescope.builtin").lsp_references, { desc = "[C]ode Goto [R]eferences" })
+            vim.keymap.set("n", "<leader>cr", require("telescope.builtin").lsp_references,
+                { desc = "[C]ode Goto [R]eferences" })
             -- Set vim motion for <Space> + c + i to display implementations to the code under the cursor
-            vim.keymap.set("n", "<leader>ci", require("telescope.builtin").lsp_implementations, { desc = "[C]ode Goto [I]mplementations" })
+            vim.keymap.set("n", "<leader>ci", require("telescope.builtin").lsp_implementations,
+                { desc = "[C]ode Goto [I]mplementations" })
             -- Set a vim motion for <Space> + c + <Shift>R to smartly rename the code under the cursor
             vim.keymap.set("n", "<leader>cR", vim.lsp.buf.rename, { desc = "[C]ode [R]ename" })
             -- Set a vim motion for <Space> + c + <Shift>D to go to where the code/object was declared in the project (class file)
             vim.keymap.set("n", "<leader>cD", vim.lsp.buf.declaration, { desc = "[C]ode Goto [D]eclaration" })
             -- Search document symbold
-            vim.keymap.set("n", "<leader>cs", require("telescope.builtin").lsp_document_symbols, {desc = "[C]ode Document [S]ymbols"})
+            vim.keymap.set("n", "<leader>cs", require("telescope.builtin").lsp_document_symbols,
+                { desc = "[C]ode Document [S]ymbols" })
         end
     }
 }
